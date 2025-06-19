@@ -1,15 +1,44 @@
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+import { Box, Typography, Button, Paper } from '@mui/material';
+import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 
-const NotFound = () => {
+export default function NotFoundMascot() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center text-center p-4">
-      <h1 className="text-6xl font-bold text-red-600 mb-4">404</h1>
-      <p className="text-xl text-gray-700 mb-6">Oops! The page you are looking for does not exist.</p>
-      <Link to="/" className="text-blue-600 underline hover:text-blue-800">
-        Go back to Home
-      </Link>
-    </div>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height:"90vh",
+        p: 2,
+      }}
+    >
+      <Paper
+        elevation={5}
+        sx={{
+          p: 5,
+          borderRadius: 4,
+          textAlign: 'center',
+          bgcolor: '#fff',
+        }}
+      >
+        <SentimentVeryDissatisfiedIcon sx={{ fontSize: 90, color: 'error.main', mb: 2 }} />
+        <Typography variant="h3" sx={{ fontWeight: 700, color: 'error.main', mb: 1 }}>
+          404
+        </Typography>
+        <Typography variant="body1" sx={{ color: 'text.secondary', mb: 3 }}>
+          Sorry, we couldn’t find that page.
+        </Typography>
+        <Button
+          component={RouterLink}
+          to="/"
+          variant="contained"
+          color="error"
+          sx={{ borderRadius: 2, px: 4 }}
+        >
+          Home
+        </Button>
+      </Paper>
+    </Box>
   );
-};
-
-export default NotFound;
+}
