@@ -1,13 +1,9 @@
 import { createContext } from 'react';
-
-interface User {
-  id: string;
-  name: string;
-}
+import type { AuthResponse } from '../api/types';
 
 interface AuthContextType {
-  user: User | null;
-  login: (userData: User) => void;
+  user: AuthResponse | null;
+  login: (userData: AuthResponse) => void;
   logout: () => void;
   isAuthenticated: boolean;
 }

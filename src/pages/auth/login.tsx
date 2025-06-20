@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -12,6 +12,8 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import wolf from "/images/wolf.png";
+import { loginApi } from "../../api/auth";
+import { useAuth } from "../../auth/useAuth";
 
 export default function Login() {
   const [hidePassword, setHidePassword] = useState(true);
@@ -20,13 +22,30 @@ export default function Login() {
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const navigate = useNavigate(); 
+  const { login } = useAuth();
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setLoginInfo({ ...loginInfo, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // IMPLEMENT LATER
+
+    setLoading(true);
+    setError(null);
+    try {
+      const authData = await loginApi(loginInfo);
+      login(authData);
+      navigate("/"); 
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Something went wrong");
+    }finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -60,6 +79,11 @@ export default function Login() {
           </Typography>
 
           <form onSubmit={handleSubmit}>
+            {error && (
+              <Typography color="error" variant="body2" sx={{ mb: 2, textAlign: 'center' }}>
+                {error}
+              </Typography>
+            )}
             <TextField
               fullWidth
               label="Username"
@@ -117,7 +141,7 @@ export default function Login() {
                 fontWeight: 600,
               }}
             >
-              Log In
+              {loading ? "Logging In" : "Log In"}
             </Button>
           </form>
 

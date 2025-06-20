@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -12,6 +12,8 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import wolf from "/images/wolf.png";
+import { useAuth } from "../../auth/useAuth";
+import { signupApi } from "../../api/auth";
 
 export default function SignUp() {
   const [hidePassword, setHidePassword] = useState(true);
@@ -24,14 +26,31 @@ export default function SignUp() {
     email: "",
     password: "",
   });
+  
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const navigate = useNavigate(); 
+  const { login } = useAuth();
+
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSignupInfo({ ...signupInfo, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // IMPLEMENT SIGNUP LOGIC HERE
+    setLoading(true);
+        setError(null);
+        try {
+          const authData = await signupApi(signupInfo);
+          login(authData);
+          navigate("/"); 
+        } catch (error) {
+          setError(error instanceof Error ? error.message : "Something went wrong");
+        }finally {
+          setLoading(false);
+        }
   };
 
   return (
@@ -65,6 +84,11 @@ export default function SignUp() {
           </Typography>
 
           <form onSubmit={handleSubmit}>
+            {error && (
+              <Typography color="error" variant="body2" sx={{ mb: 2, textAlign: 'center' }}>
+                {error}
+              </Typography>
+            )}
             <TextField
               fullWidth
               label="Username"
@@ -137,7 +161,7 @@ export default function SignUp() {
                 fontWeight: 600,
               }}
             >
-              Register
+              {loading ? "Registering" : "Register"}
             </Button>
           </form>
 
