@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
+// import Cookies from 'js-cookie';
 
 const API_BASE_URL = import.meta.env.VITE_API_SERVER_URL || 'http://localhost:8080/api';
 
@@ -8,17 +8,6 @@ export const apiClient = axios.create({
     headers: { 'Content-Type': 'application/json'} ,
     withCredentials: true,
 });
-
-apiClient.interceptors.request.use((config) => {
-    const token = Cookies.get('authToken');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-}, (error) => {
-    return Promise.reject(error);
-});
-
 
 apiClient.interceptors.response.use(
     (response) => {

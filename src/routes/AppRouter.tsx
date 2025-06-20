@@ -4,10 +4,12 @@ import NotFound from '../pages/404';
 import Login from '../pages/auth/login';
 import Home from '../pages/home';
 import SignUp from '../pages/auth/signup';
+import { AuthProvider } from '../auth/AuthContext';
 
 const AppRouter = () => {
   return (
     <Router>
+      <AuthProvider>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
@@ -21,6 +23,7 @@ const AppRouter = () => {
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </AuthProvider>
     </Router>
   );
 };
