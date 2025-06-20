@@ -1,11 +1,11 @@
 import { useState, type ReactNode } from 'react';
 import { AuthContext } from './AuthContextValue';
-import type { User } from './types';
+import type { AuthResponse } from '../api/types';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthResponse| null>(null);
 
-  const login = (userData: User) => setUser(userData);
+  const login = (userData: AuthResponse) => setUser(userData);
   const logout = () => setUser(null);
 
   return (

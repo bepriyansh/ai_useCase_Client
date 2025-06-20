@@ -3,12 +3,12 @@ import type { AuthResponse, LoginData, SignUpData } from "./types";
 
 export const loginApi = async (credentials: LoginData): Promise<AuthResponse> => {
     const response = await apiClient.post('/auth/login', credentials);
-    return response.data;
+    return response.data.data;
 };
 
 export const signupApi = async (signupData: SignUpData): Promise<AuthResponse> => {
     const response = await apiClient.post('/auth/register', signupData);
-    return response.data;
+    return response.data.data;
 };
 
 export const logoutApi = async ()=>{
