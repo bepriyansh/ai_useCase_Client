@@ -6,12 +6,12 @@ export const getFeed = async (page = 1, limit = 10): Promise<FeedResponse> => {
         const response = await apiClient.get('/feed', {
             params: { page, limit },
         });
-        const backendData = response.data.data;
+        const data = response.data.data;
         return {
-            items: backendData.posts,
-            currentPage: backendData.currentPage,
-            totalPages: backendData.totalPages,
-            totalItems: backendData.totalPosts,
+            items: data.posts,
+            currentPage: data.currentPage,
+            totalPages: data.totalPages,
+            totalItems: data.totalPosts,
         };
     } catch (error) {
         console.error('Failed to fetch feed:', error);
@@ -26,12 +26,12 @@ export const getComments = async (postId: string, page = 1, limit = 10): Promise
         const response = await apiClient.get(`/posts/${postId}/comments`, {
             params: { page, limit },
         });
-        const backendData = response.data.data;
+        const data = response.data.data;
         return {
-            items: backendData.comments,
-            currentPage: backendData.currentPage,
-            totalPages: backendData.totalPages,
-            totalItems: backendData.totalComments,
+            items: data.comments,
+            currentPage: data.currentPage,
+            totalPages: data.totalPages,
+            totalItems: data.totalComments,
         };
     } catch (error) {
         console.error(`Failed to fetch comments for post ${postId}:`, error);

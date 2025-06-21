@@ -1,5 +1,4 @@
 import axios from 'axios';
-// import Cookies from 'js-cookie';
 
 const API_BASE_URL = import.meta.env.VITE_API_SERVER_URL || 'http://localhost:8080/api';
 
@@ -20,6 +19,6 @@ apiClient.interceptors.response.use(
         if (axios.isAxiosError(error) && error.response) {
             return Promise.reject(new Error(error.response.data.message || 'A server error occurred.'));
         }
-        return Promise.reject(new Error('A network error occurred. Please check your connection.'));
+        return Promise.reject(new Error('A network error occurred.'));
     }
 );
