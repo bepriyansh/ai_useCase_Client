@@ -3,7 +3,7 @@ import type { CommentsResponse, FeedResponse } from "./types";
 
 export const getFeed = async (page = 1, limit = 10): Promise<FeedResponse> => {
     try {
-        const response = await apiClient.get('/feed', {
+        const response = await apiClient.get('/post/get', {
             params: { page, limit },
         });
         const data = response.data.data;
