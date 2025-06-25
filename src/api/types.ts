@@ -26,8 +26,11 @@ export interface IPost {
     description: string;
     images: string[];
     user: IUser; 
-    createdAt: string;
-    updatedAt: string;
+    isLiked: boolean;
+    totalLikes: number;
+    totalComments: number;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface IComment {
