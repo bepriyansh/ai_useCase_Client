@@ -27,15 +27,15 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const navigate = useNavigate();
-  const { toggleLike } = usePost();
+  const { toggleLike, likingPosts } = usePost();
+
+  const isLiking = likingPosts.has(post._id);
 
   const handleLike = () => {
-    console.log('Liked post', post._id);
     toggleLike(post._id);
   };
 
   const handleComment = () => {
-    console.log('Comment on post', post._id);
     navigate(`/post/${post._id}`);
   };
 
@@ -62,7 +62,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton onClick={handleLike} color={post.isLiked ? 'error' : 'default'}>
+        <IconButton onClick={handleLike} color={post.isLiked ? 'error' : 'default'} disabled={isLiking}>
           {post.isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </IconButton>
         <Typography variant="body2">{post.totalLikes}</Typography>

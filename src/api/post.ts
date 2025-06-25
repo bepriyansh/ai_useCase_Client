@@ -38,3 +38,14 @@ export const getComments = async (postId: string, page = 1, limit = 10): Promise
         throw error;
     }
 };
+
+export const likePost = async(postId:string) =>{
+    if (!postId) throw new Error('Post ID is required to like the post.');
+
+    try {
+        await apiClient.post('/post/like', { post: postId });
+    } catch (error) {
+        console.error(`Failed to like post ${postId}:`, error);
+        throw error;
+    }
+}
