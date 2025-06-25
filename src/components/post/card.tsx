@@ -18,18 +18,25 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PostCarousel from './carousel';
 import type { IPost } from '../../api/types';
 import { timeAgo } from '../../utils/timeAgo';
+import { useNavigate } from 'react-router-dom';
+import { usePost } from '../../post/PostContext';
 
 interface PostCardProps {
   post: IPost;
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
+  const navigate = useNavigate();
+  const { toggleLike } = usePost();
+
   const handleLike = () => {
     console.log('Liked post', post._id);
+    toggleLike(post._id);
   };
 
   const handleComment = () => {
     console.log('Comment on post', post._id);
+    navigate(`/post/${post._id}`);
   };
 
   const handleShare = () => {
