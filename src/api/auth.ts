@@ -20,3 +20,18 @@ export const refreshToken = async ()=>{
     const response = await apiClient.post('/auth/refreshToken');
     return response.data;
 }
+
+export const sendResetLink = async (email : string) => {
+    const response = await apiClient.post('/auth/reset/forgotPassword', {email});
+    return response.data;
+}
+
+export const validateResetToken = async (token: string) => {
+    const response = await apiClient.post('/auth/reset/validateResetToken', {token});
+    return response.data;
+}
+
+export const resetPassword = async (token: string, newPassword: string) => {
+    const response = await apiClient.post('/auth/reset/resetPassword', {token, newPassword});
+    return response.data;
+}

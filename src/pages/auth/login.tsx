@@ -146,9 +146,11 @@ export default function Login() {
           </form>
 
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Typography variant="caption" sx={{ cursor: "pointer"}}>
-              Forgot Password
-            </Typography>
+            <Link to="/forgot-password" style={{ textDecoration: "none" }}>
+              <Typography variant="caption" sx={{ cursor: "pointer"}}>
+                Forgot Password
+              </Typography>
+            </Link>
             <Divider sx={{ my: 2, borderRadius: 2 }} />
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <Typography variant="caption" sx={{ display: "flex", alignItems: "center" }}>

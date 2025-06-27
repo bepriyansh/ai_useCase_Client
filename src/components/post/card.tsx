@@ -44,7 +44,14 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   };
 
   return (
-    <Card sx={{ maxWidth: 600, margin: 'auto', mb: 1, border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', boxShadow: "none" }}>
+    <Card sx={{ 
+        maxWidth: 600, 
+        margin: 'auto', 
+        mb: 1, 
+        borderRadius: '8px', 
+        boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+        border: '1px solid rgba(0,0,0,0.12)'
+      }}>
       <CardHeader
         avatar={<Avatar src={post.user.profilePicture} />}
         action={<IconButton><MoreVertIcon /></IconButton>}

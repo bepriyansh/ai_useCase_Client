@@ -1,5 +1,6 @@
 import { apiClient } from "./axios";
-import type { CommentsResponse, FeedResponse } from "./types";
+import { uploadImages } from "./cloudinary";
+import type { CommentsResponse, FeedResponse, IPost } from "./types";
 
 export const getFeed = async (page = 1, limit = 10): Promise<FeedResponse> => {
     try {
@@ -19,12 +20,25 @@ export const getFeed = async (page = 1, limit = 10): Promise<FeedResponse> => {
     }
 };
 
+export const getPostById = async (postId: string) : Promise<IPost> => {
+    try {
+        const response = await apiClient.get('/post/getById', {
+            params: { postId },
+        });
+        const data = response.data.data;
+        return data.post;
+    } catch (error) {
+        console.error('Failed to fetch post:', error);
+        throw error;
+    }
+}
+
 export const getComments = async (postId: string, page = 1, limit = 10): Promise<CommentsResponse> => {
     if (!postId) throw new Error('Post ID is required to fetch comments.');
 
     try {
-        const response = await apiClient.get(`/posts/${postId}/comments`, {
-            params: { page, limit },
+        const response = await apiClient.get(`/comment/get`, {
+            params: { page, limit, postId },
         });
         const data = response.data.data;
         return {
@@ -46,6 +60,31 @@ export const likePost = async(postId:string) =>{
         await apiClient.post('/post/like', { post: postId });
     } catch (error) {
         console.error(`Failed to like post ${postId}:`, error);
+        throw error;
+    }
+}
+
+export const addComment = async ({postId, description, askAI}:{postId:string, description:string, askAI: boolean}) => {
+    try {
+        console.log("Description: ", description, askAI);
+        await apiClient.post('/comment/create', {
+            post:postId,
+            description,
+            askAI
+        })
+    } catch (error) {
+        console.error(`Failed to like post ${postId}:`, error);
+        throw error;
+    }
+}
+
+export const createPost = async ({images, description}:{images:File[], description:string}) => {
+    try {
+        const imgUrls = await uploadImages(images);
+        const response = await apiClient.post('/post/create', {description, images:imgUrls});
+        console.log(response.data);
+    } catch (error) {
+        console.log("Error creating post: ", error)
         throw error;
     }
 }

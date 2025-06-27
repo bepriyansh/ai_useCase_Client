@@ -13,7 +13,7 @@ export interface LoginData {
 export interface IUser {
     _id: string;
     username: string;
-    role: string;
+    role?: string;
     profilePicture?: string;
 }
 
@@ -36,6 +36,7 @@ export interface IPost {
 export interface IComment {
     _id: string;
     description: string;
+    aiReply: string;
     user: IUser; 
     post: string; 
     createdAt: string;

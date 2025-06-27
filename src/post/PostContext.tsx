@@ -1,13 +1,15 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { getFeed, likePost } from "../api/post";
 import type { FeedResponse, IPost } from "../api/types";
+import { getPostById as getPostFromServer } from "../api/post"
+
 
 interface PostContextType {
   posts: IPost[];
   fetchPosts: () => Promise<void>;
   hasMore: boolean;
   toggleLike: (id: string) => Promise<void>;
-  getPostById: (id: string) => IPost | undefined;
+  getPostById: (id: string) => Promise<IPost | undefined>;
   likingPosts: Set<string>;  
 }
 
@@ -73,7 +75,20 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-  const getPostById = (id: string) => posts.find((p) => p._id === id);
+  const getPostById = async (id: string): Promise<IPost | undefined> => {
+    const post = posts.find((p) => p._id === id);
+    
+    if (post) return post;
+
+    try {
+      const fetchedPost = await getPostFromServer(id);
+      setPosts((prev) => [...prev, fetchedPost]);
+      return fetchedPost;
+    } catch (error) {
+      console.error("Failed to fetch post by ID:", error);
+      return undefined;
+    }
+  }
 
   return (
     <PostContext.Provider

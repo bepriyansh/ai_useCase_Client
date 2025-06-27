@@ -6,6 +6,8 @@ import Home from '../pages/home';
 import SignUp from '../pages/auth/signup';
 import PostPage from '../pages/post';
 import Providers from '../Providers';
+import ResetPassword from '../pages/resetPassword';
+import ForgetPassword from '../pages/forgetPassword';
 
 const AppRouter = () => {
   return (
@@ -14,6 +16,8 @@ const AppRouter = () => {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/forgot-password" element={<ForgetPassword />} />
           <Route
             path="/"
             element={

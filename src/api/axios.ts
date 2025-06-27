@@ -5,7 +5,6 @@ const API_BASE_URL = import.meta.env.VITE_API_SERVER_URL || 'http://localhost:80
 
 export const apiClient = axios.create({
     baseURL: API_BASE_URL,
-    headers: { 'Content-Type': 'application/json'} ,
     withCredentials: true,
 });
 
@@ -14,6 +13,9 @@ apiClient.interceptors.request.use(
         const token = Cookies.get('accessToken');
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
+        }
+        if (!(config.data instanceof FormData)) {
+            config.headers['Content-Type'] = 'application/json';
         }
         return config;
     },
