@@ -1,8 +1,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import { getFeed, likePost } from "../api/post";
+import { getFeed, likePost, deletePost as deletePostApi } from "../api/post";
 import type { FeedResponse, IPost } from "../api/types";
 import { getPostById as getPostFromServer } from "../api/post"
-
 
 interface PostContextType {
   posts: IPost[];
@@ -10,7 +9,9 @@ interface PostContextType {
   hasMore: boolean;
   toggleLike: (id: string) => Promise<void>;
   getPostById: (id: string) => Promise<IPost | undefined>;
-  likingPosts: Set<string>;  
+  deletePost: (id: string) => Promise<void>;
+  likingPosts: Set<string>;
+  deletingPosts: Set<string>;
 }
 
 const PostContext = createContext<PostContextType | undefined>(undefined);
@@ -20,6 +21,7 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [likingPosts, setLikingPosts] = useState<Set<string>>(new Set());
+  const [deletingPosts, setDeletingPosts] = useState<Set<string>>(new Set());
 
   const mergeUniquePosts = (arr1: IPost[], arr2: IPost[]) => {
     const map = new Map();
@@ -43,37 +45,56 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
       console.error("Failed to fetch posts:", error);
     }
   };
-    const toggleLike = async (id: string) => {
-        const previousPosts = posts;
-        setLikingPosts((prev) => new Set(prev).add(id));
 
-        setPosts((prev) =>
-            prev.map((post) =>
-            post._id === id
-                ? {
-                    ...post,
-                    isLiked: !post.isLiked,
-                    totalLikes: post.isLiked
-                    ? post.totalLikes - 1
-                    : post.totalLikes + 1,
-                }
-                : post
-            )
-        );
+  const toggleLike = async (id: string) => {
+    const previousPosts = posts;
+    setLikingPosts((prev) => new Set(prev).add(id));
 
-        try {
-            await likePost(id); 
-        } catch (error) {
-            console.error("Failed to like post:", error);
-            setPosts(previousPosts);
-        } finally {
-            setLikingPosts((prev) => {
-            const newSet = new Set(prev);
-            newSet.delete(id);
-            return newSet;
-            });
-        }
-    };
+    setPosts((prev) =>
+      prev.map((post) =>
+        post._id === id
+          ? {
+              ...post,
+              isLiked: !post.isLiked,
+              totalLikes: post.isLiked
+                ? post.totalLikes - 1
+                : post.totalLikes + 1,
+            }
+          : post
+      )
+    );
+
+    try {
+      await likePost(id);
+    } catch (error) {
+      console.error("Failed to like post:", error);
+      setPosts(previousPosts);
+    } finally {
+      setLikingPosts((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(id);
+        return newSet;
+      });
+    }
+  };
+
+  const deletePost = async (id: string) => {
+    setDeletingPosts((prev) => new Set(prev).add(id));
+
+    try {
+      await deletePostApi(id);
+      setPosts((prev) => prev.filter((post) => post._id !== id));
+    } catch (error) {
+      console.error("Failed to delete post:", error);
+      throw error; // Re-throw to handle in UI
+    } finally {
+      setDeletingPosts((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(id);
+        return newSet;
+      });
+    }
+  };
 
   const getPostById = async (id: string): Promise<IPost | undefined> => {
     const post = posts.find((p) => p._id === id);
@@ -88,7 +109,7 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
       console.error("Failed to fetch post by ID:", error);
       return undefined;
     }
-  }
+  };
 
   return (
     <PostContext.Provider
@@ -98,7 +119,9 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
         hasMore,
         toggleLike,
         getPostById,
-        likingPosts, 
+        deletePost,
+        likingPosts,
+        deletingPosts,
       }}
     >
       {children}

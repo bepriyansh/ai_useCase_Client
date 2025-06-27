@@ -66,7 +66,6 @@ export const likePost = async(postId:string) =>{
 
 export const addComment = async ({postId, description, askAI}:{postId:string, description:string, askAI: boolean}) => {
     try {
-        console.log("Description: ", description, askAI);
         await apiClient.post('/comment/create', {
             post:postId,
             description,
@@ -85,6 +84,28 @@ export const createPost = async ({images, description}:{images:File[], descripti
         console.log(response.data);
     } catch (error) {
         console.log("Error creating post: ", error)
+        throw error;
+    }
+}
+
+export const deletePost = async (id:string) => {
+    try {
+        await apiClient.delete('/post/delete', {
+            data: { id }
+        });
+    } catch (error) {
+        console.log('Failed to delete Post: ', error);
+        throw error;
+    }
+}
+
+export const deleteComment = async (id:string) => {
+    try {
+        await apiClient.delete('/comment/delete', {
+            data: { id }
+        });
+    } catch (error) {
+        console.log('Failed to delete Post: ', error);
         throw error;
     }
 }

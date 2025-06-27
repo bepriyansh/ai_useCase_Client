@@ -11,7 +11,7 @@ export interface LoginData {
 }
 
 export interface IUser {
-    _id: string;
+    id: string;
     username: string;
     role?: string;
     profilePicture?: string;

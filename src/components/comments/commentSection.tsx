@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 import InfiniteScroll from "react-infinite-scroll-component";
 import type { IComment } from "../../api/types";
 import CommentCard from "./commentCard";
-import { getComments } from "../../api/post";
+import { deleteComment, getComments } from "../../api/post";
 import CommentSkeleton from "../skeletons/commentCard";
 
 interface CommentSectionProps {
@@ -14,6 +14,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   const [comments, setComments] = useState<IComment[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [deletingComments, setDeletingComments] = useState<Set<string>>(new Set());
 
   const mergeUniquePosts = (arr1: IComment[], arr2: IComment[]) => {
     const map = new Map();
@@ -44,9 +45,29 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     setComments([]);
     setPage(1);
     setHasMore(true);
+    setDeletingComments(new Set());
     fetchComments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postId]);
+
+  const handleDeleteComment = async (commentId: string) => {
+    setDeletingComments((prev) => new Set(prev).add(commentId));
+
+    try {
+      await deleteComment(commentId);
+
+      setComments((prev) => prev.filter(comment => comment._id !== commentId));
+      
+    } catch (error) {
+      console.error('Failed to delete comment:', error);
+    } finally {
+      setDeletingComments((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(commentId);
+        return newSet;
+      });
+    }
+  };
 
   return (
     <Box>
@@ -78,7 +99,12 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
         }
       >
         {comments.map((comment) => (
-          <CommentCard key={comment._id} comment={comment} />
+          <CommentCard 
+            key={comment._id} 
+            comment={comment} 
+            onDelete={handleDeleteComment} 
+            isDeleting={deletingComments.has(comment._id)}
+          />
         ))}
       </InfiniteScroll>
     </Box>
