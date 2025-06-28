@@ -76,7 +76,7 @@ const CreatePost = () => {
       await createPost({ description: text.trim(), images: selectedImages });
 
       clearAll();
-    } catch (e) {
+    } catch {
       setError('Failed to create post');
     } finally {
       setLoading(false);
@@ -85,7 +85,7 @@ const CreatePost = () => {
 
   useEffect(() => {
     return () => previewUrls.forEach(url => URL.revokeObjectURL(url));
-  }, []);
+  });
 
   const isFormValid = text.trim() || selectedImages.length > 0;
 
