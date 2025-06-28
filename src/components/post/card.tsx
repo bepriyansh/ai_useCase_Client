@@ -26,6 +26,7 @@ import { timeAgo } from '../../utils/timeAgo';
 import { useNavigate } from 'react-router-dom';
 import { usePost } from '../../post/PostContext';
 import { useAuth } from '../../auth/useAuth';
+import FormattedText from '../FormattedText';
 
 interface PostCardProps {
   post: IPost;
@@ -177,9 +178,10 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           </CardMedia>
         )}
         <CardContent>
-          <Typography variant="body2" color="text.secondary">
-            {post.description}
-          </Typography>
+          <FormattedText 
+            text={post.description} 
+            color="text.primary"
+          />
         </CardContent>
         <CardActions disableSpacing>
           <IconButton 

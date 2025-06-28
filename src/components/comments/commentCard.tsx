@@ -6,23 +6,105 @@ import {
   CardHeader,
   IconButton,
   Typography,
-  Paper,
   Menu,
   MenuItem,
   CircularProgress,
   Backdrop,
+  Box,
+  Chip,
+  Divider,
 } from "@mui/material";
 import type { IComment } from "../../api/types";
 import { timeAgo } from "../../utils/timeAgo";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 import { useAuth } from "../../auth/useAuth";
+import FormattedText from '../FormattedText';
 
 interface CommentCardProps {
   comment: IComment;
   onDelete?: (commentId: string) => Promise<void>;
   isDeleting?: boolean;
 }
+
+const AI_ACCOUNT = {
+  username: "AI Assistant",
+  profilePicture: "", 
+  fallbackIcon: SmartToyIcon,
+};
+
+// AI Reply Component as part of the same comment
+const AIReply: React.FC<{ aiReply: string }> = ({ aiReply }) => {
+  const FallbackIcon = AI_ACCOUNT.fallbackIcon;
+  
+  return (
+    <Box sx={{ mt: 2 }}>
+      <Divider sx={{ mb: 2, opacity: 0.3 }} />
+      
+      <Box sx={{ display: 'flex', gap: 1.5 }}>
+        <Avatar 
+          src={AI_ACCOUNT.profilePicture}
+          sx={{ 
+            bgcolor: '#1976d2',
+            width: 32,
+            height: 32,
+          }}
+        >
+          {!AI_ACCOUNT.profilePicture && <FallbackIcon sx={{ fontSize: 18 }} />}
+        </Avatar>
+        
+        <Box sx={{ flex: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+            <Typography 
+              variant="subtitle2" 
+              sx={{ 
+                fontWeight: 600,
+                fontSize: '0.875rem',
+              }}
+            >
+              {AI_ACCOUNT.username}
+            </Typography>
+            <Chip
+              label="AI"
+              size="small"
+              sx={{
+                height: 18,
+                fontSize: '0.65rem',
+                bgcolor: '#e3f2fd',
+                color: '#1976d2',
+                fontWeight: 600,
+                '& .MuiChip-label': {
+                  px: 1,
+                }
+              }}
+            />
+            <Typography variant="caption" color="text.secondary">
+              • AI-generated response
+            </Typography>
+          </Box>
+          
+          <Box 
+            sx={{
+              backgroundColor: '#f8f9fa',
+              borderRadius: '12px',
+              padding: '12px 16px',
+              border: '1px solid #e3f2fd',
+              position: 'relative',
+            }}
+          >
+            <FormattedText 
+              text={aiReply} 
+              color="#333333"
+              bgColor="#f8f9fa"
+              variant="body2"
+            />
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
 
 const CommentCard: React.FC<CommentCardProps> = ({ 
   comment, 
@@ -60,14 +142,17 @@ const CommentCard: React.FC<CommentCardProps> = ({
       sx={{
         maxWidth: 600,
         margin: 'auto',
-        mb: 1,
+        mb: 2,
         border: '1px solid rgba(0,0,0,0.1)',
-        borderRadius: '8px',
-        boxShadow: 'none',
+        borderRadius: '12px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
         position: 'relative',
         opacity: isDeleting ? 0.4 : 1,
         transition: 'opacity 0.3s ease',
-        pointerEvents: isDeleting ? 'none' : 'auto'
+        pointerEvents: isDeleting ? 'none' : 'auto',
+        '&:hover': {
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        }
       }}
     >
       {/* Loading overlay for deletion */}
@@ -81,7 +166,7 @@ const CommentCard: React.FC<CommentCardProps> = ({
             bottom: 0,
             zIndex: 10,
             backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            borderRadius: '8px',
+            borderRadius: '12px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -110,14 +195,27 @@ const CommentCard: React.FC<CommentCardProps> = ({
       )}
 
       <CardHeader
-        avatar={<Avatar src={comment.user.profilePicture} />}
+        avatar={
+          <Avatar 
+            src={comment.user.profilePicture}
+            sx={{ width: 40, height: 40 }}
+          />
+        }
         action={isOwner && (
           <IconButton onClick={handleMenuClick} disabled={isDeleting}>
             <MoreVertIcon />
           </IconButton>
         )}
-        title={comment.user.username}
-        subheader={timeAgo(comment.createdAt)}
+        title={
+          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+            {comment.user.username}
+          </Typography>
+        }
+        subheader={
+          <Typography variant="caption" color="text.secondary">
+            {timeAgo(comment.createdAt)}
+          </Typography>
+        }
       />
 
       {/* Menu for more options */}
@@ -142,33 +240,15 @@ const CommentCard: React.FC<CommentCardProps> = ({
         </Menu>
       )}
 
-      <CardContent>
-        <Typography variant="body2" color="text.secondary">
-          {comment.description}
-        </Typography>
-
+      <CardContent sx={{ pt: 0 }}>
+        <FormattedText 
+          text={comment.description} 
+          color="text.primary"
+        />
+        
+        {/* AI Reply as part of the same comment */}
         {comment.aiReply && (
-          <Paper
-            variant="outlined"
-            sx={{
-              p: 1.5,
-              mt: 1.5,
-              backgroundColor: 'rgba(0,0,0,0.03)',
-              borderRadius: '8px',
-              borderLeft: '4px solid #1976d2',
-            }}
-          >
-            <Typography
-              variant="caption"
-              color="primary"
-              sx={{ fontWeight: 600 }}
-            >
-              AI Reply
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {comment.aiReply}
-            </Typography>
-          </Paper>
+          <AIReply aiReply={comment.aiReply} />
         )}
       </CardContent>
     </Card>
