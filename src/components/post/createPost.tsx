@@ -16,6 +16,7 @@ import {
 import { Photo, Close } from '@mui/icons-material';
 import { createPost } from '../../api/post';
 import { useAuth } from '../../auth/useAuth';
+import { usePost } from '../../post/PostContext';
 
 const CreatePost = () => {
   const [text, setText] = useState('');
@@ -24,6 +25,7 @@ const CreatePost = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const {user} = useAuth();
+  const { refreshPosts } = usePost();
 
   const currentUser = {
     name: user?.username || "Sir",
@@ -76,6 +78,7 @@ const CreatePost = () => {
       await createPost({ description: text.trim(), images: selectedImages });
 
       clearAll();
+      await refreshPosts();
     } catch {
       setError('Failed to create post');
     } finally {

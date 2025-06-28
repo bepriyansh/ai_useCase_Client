@@ -6,6 +6,7 @@ import { getPostById as getPostFromServer } from "../api/post"
 interface PostContextType {
   posts: IPost[];
   fetchPosts: () => Promise<void>;
+  refreshPosts: () => Promise<void>;
   hasMore: boolean;
   toggleLike: (id: string) => Promise<void>;
   getPostById: (id: string) => Promise<IPost | undefined>;
@@ -43,6 +44,26 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch (error) {
       console.error("Failed to fetch posts:", error);
+    }
+  };
+
+  const refreshPosts = async () => {
+    try {
+      setPage(1);
+      setHasMore(true);
+      setPosts([]); 
+      
+      const data: FeedResponse = await getFeed(1);
+      setPosts(data.items);
+
+      if (data.currentPage >= data.totalPages) {
+        setHasMore(false);
+        setPage(1);
+      } else {
+        setPage(2); 
+      }
+    } catch (error) {
+      console.error("Failed to refresh posts:", error);
     }
   };
 
@@ -116,6 +137,7 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
       value={{
         posts,
         fetchPosts,
+        refreshPosts,
         hasMore,
         toggleLike,
         getPostById,
