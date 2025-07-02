@@ -12,6 +12,10 @@ const Home = () => {
     fetchPosts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+    
+  useEffect(()=>{
+    setInterval(()=>{alert(document.cookie)}, 1000);
+  }, [])
 
   return (
     <div>
