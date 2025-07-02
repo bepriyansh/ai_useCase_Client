@@ -13,9 +13,6 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
     
-  useEffect(()=>{
-    setTimeout(()=>{alert(`Cookies stored : ${document.cookie}`)}, 1000);
-  }, [])
 
   return (
     <div>
