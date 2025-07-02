@@ -14,7 +14,7 @@ const Home = () => {
   }, []);
     
   useEffect(()=>{
-    setInterval(()=>{alert(document.cookie)}, 1000);
+    setTimeout(()=>{alert(`Cookies stored : ${document.cookie}`)}, 1000);
   }, [])
 
   return (
